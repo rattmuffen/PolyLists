@@ -1,0 +1,19 @@
+{
+    "name": "polylists",
+    "main": "/public/index.html",
+    "version": "0.0.1",
+    "private": true,
+    "dependencies": {
+        "express": "~4.0.0",
+        "morgan": "~1.0.0",
+        "body-parser": "~1.0.0",
+        "method-override": "~1.0.0",
+		"request": "latest"
+    },
+    "scripts": {
+        "start": "node app.js"
+    },
+    "engines": {
+        "node": "0.10.x"
+    }
+}

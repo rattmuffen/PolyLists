@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/iron-signals/iron-signals.html">
+
+<link rel="import" href="grid-item.html">
+
+<dom-module id="list-grid">
+	<style>
+	</style>
+
+    <template>
+		<!-- Auto fetch lists from server -->
+		<iron-ajax auto url="get/lists" handle-as="json" on-response="response"></iron-ajax>
+		
+		<!-- Update signal listener -->
+		<iron-signals on-iron-signal-update="update"></iron-signals>
+		
+		<div id="listgrid">
+			<template is="dom-repeat" items="[[data]]">
+				<grid-item listid="{{item.id}}"
+						   title="{{item.title}}"
+						   image="{{item.image}}"
+						   items="{{item.items}}"
+						   description="{{item.description}}">
+				</grid-item>	
+			</template>
+		</div>
+    </template>
+	
+	<script>
+		Polymer({
+			is: "list-grid",
+			ready: function () {
+				this.data = [];
+			},
+			response: function(request) {
+				this.data =  request.detail.response;
+				console.log(this.data)
+			},
+			update: function(e, detail, sender) {
+				console.log('Recieved data update...');
+				this.data =  JSON.parse(detail);
+			}
+		});
+	</script>
+</dom-module>

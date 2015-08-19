@@ -8,7 +8,8 @@
         "morgan": "~1.0.0",
         "body-parser": "~1.0.0",
         "method-override": "~1.0.0",
-		"request": "latest"
+		"request": "latest",
+		"node-uuid": "latest"
     },
     "scripts": {
         "start": "node app.js"

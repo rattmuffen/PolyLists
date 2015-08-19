@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/iron-signals/iron-signals.html">
+
+<dom-module id="create-dialog">
+	<style>
+		#newListDialog {
+			overflow-y: hidden;
+		}
+		
+		iron-icon {
+			margin-right: 5px;
+		}
+	</style>
+
+    <template>
+		<paper-dialog modal id="newListDialog">
+			<h2>Create new list</h2>
+			
+			<paper-input label="Title" type="text" bind-value="{{title}}"></paper-input>
+			<paper-input label="Description" type="text" bind-value="{{description}}"></paper-input>
+			<paper-input label="Image URL" type="text" bind-value="{{image}}"></paper-input>
+				
+			<paper-button dialog-dismiss>Discard</paper-button>
+		    <paper-button dialog-confirm on-click="submitList">
+				<iron-icon icon="check"></iron-icon>Save
+			</paper-button>
+		</paper-dialog>
+    </template>
+
+	<script>
+		Polymer({
+			is: "create-dialog",
+			properties: {
+				title: {
+					type: String
+				},
+				description: {
+					type: String
+				},
+				image: {
+					type: String
+				}
+			},
+			submitList: function() {
+				console.log('Submit list ' + this.title);
+				var query = {'title': this.title, 'description': this.description, 'image': this.image};
+				
+				//TODO reset variables here.
+				
+				// Post query to server.
+				$.post('create/list', query, function(data) {
+					// Fire updated data event.
+					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
+				});
+			}
+		});
+	</script>
+</dom-module>

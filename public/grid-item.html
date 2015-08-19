@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<link rel="import" href="bower_components/paper-card/paper-card.html">
+<link rel="import" href="bower_components/paper-item/paper-item.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="bower_components/iron-signals/iron-signals.html">
+
+<dom-module id="grid-item">
+	<style>
+		paper-card {
+			margin-top: 20px;
+
+		}
+		
+		#list-description {
+			font-size: 18px;
+		}
+		
+		#new-item-input {
+			display: inline-block;
+			width: 75%;
+		}
+	</style>
+
+    <template>
+		<paper-card heading="{{title}}" image="{{image}}" elevation="2">
+			<div id="list-description" class="card-content"><i>{{description}}</i></div>
+			<template is="dom-repeat" items="[[items]]">
+				<paper-item class="card-actions">{{item.text}}</paper-item>
+			</template>
+			<div class="card-actions">
+				<paper-input id="new-item-input" label="New item" type="text" bind-value="{{text}}">
+				</paper-input>
+				<paper-icon-button icon="add" title="Add item" on-click="submitItem">
+				</paper-icon-button>
+			</div>
+		</paper-card>
+    </template>
+
+	<script>
+		Polymer({
+			is: "grid-item",
+			properties: {
+				listid: {
+					type: String
+				},
+				title: {
+					type: String
+				},
+				description: {
+					type: String
+				},
+				image: {
+					type: String
+				},
+				items: {
+					type: Array
+				},
+				text: {
+					type: String
+				},
+			},
+			submitItem: function() {
+				console.log('Submit item to list ' + this.title);
+				var query = {'id': this.listid, 'text': this.text};
+				
+				//TODO reset variables here.
+				
+				// Post query to server.
+				$.post('add/list', query, function(data) {
+					// Fire updated data event.
+					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
+				});
+			}
+		});
+	</script>
+</dom-module>

@@ -12,48 +12,19 @@
 			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
 		<![endif]-->
 		
-		<!-- Style -->
-		<link rel="stylesheet" href="css/style.css">
-
 		<!-- Polymer -->
-		<script src="bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
- 		<link rel="import" href="bower_components/paper-styles/paper-styles.html">
-		<link rel="import" href="bower_components/paper-styles/paper-styles-classes.html">
+		<script src="bower_components/webcomponentsjs/webcomponents.js"></script>
         <link rel="stylesheet" href="bower_components/paper-styles/demo.css">
-
-		<!-- Polymer elements -->
-		<link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
-		<link rel="import" href="bower_components/paper-button/paper-button.html">
-		<link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
-		<link rel="import" href="bower_components/paper-input/paper-input.html">
-		<link rel="import" href="bower_components/paper-input/paper-textarea.html">
 		
-		<!-- Scripts -->
+		<!-- jQuery -->
+		<script src="bower_components/jquery/dist/jquery.min.js"></script>
+
+		<!-- Elements -->
+		<link rel="import" href="main-toolbar.html">
+		<link rel="import" href="list-grid.html">
 	</head>
 	<body>
-		
-		<!-- Main toolbar -->
-		<paper-toolbar>
-			<div class="title">PolyLists</div>
-			<paper-button onclick="clickHandler(event)">New list</paper-button>
-		</paper-toolbar>
-		
-		<paper-dialog modal id="newListDialog">
-		  <h2>New list</h2>
-		  <paper-input label="Title"></paper-input>
-		  <paper-textarea label="Content"></paper-textarea>
-		  <div class="buttons">
-		    <paper-button dialog-dismiss>Discard</paper-button>
-		    <paper-button dialog-confirm>Save</paper-button>
-		  </div>
-		</paper-dialog>
-		
+		<main-toolbar></main-toolbar>
+		<list-grid></list-grid>
 	</body>
-	
-	<script type="text/javascript">
-		var dialog = document.getElementById('newListDialog');
-		function clickHandler(e) {
-			dialog.toggle();
-		}
-	</script>
 </html>

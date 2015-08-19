@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+
+<link rel="import" href="create-dialog.html">
+
+<dom-module id="main-toolbar">
+	<style>
+	</style>
+
+    <template>
+		<paper-toolbar>
+			<div class="title">PolyLists</div>
+			<paper-button on-click="toggleDialog">New list</paper-button>
+		</paper-toolbar>
+		
+		<create-dialog></create-dialog>
+    </template>
+
+	<script>
+		Polymer({
+			is: "main-toolbar",
+			toggleDialog: function() {
+				var dialog = document.getElementById('newListDialog');
+				dialog.toggle();
+			}
+		});
+	</script>
+</dom-module>

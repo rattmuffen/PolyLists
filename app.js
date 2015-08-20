@@ -18,11 +18,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
 //TODO change datatype for faster data retrieval.
-var lists = [{'id': '-1',
-			  'description': 'Welcome to PolyLists',
-			  'title': 'PolyLists',
-			  'image': '',
-			  'items': [{'text': 'Add a new list via the navbar'}]}];
+var lists = [
+	{'id': '-1',
+	 'description': 'Welcome to PolyLists',
+	 'title': 'PolyLists',
+	 'image': '',
+	 'items': [{'id': uuid.v4(), 'text': 'Add a new list via the navbar'}]}
+];
 
 // Get current lists.
 app.get('/get/lists', function (req, res) {
@@ -54,22 +56,16 @@ app.post('/create/list', function (req, res) {
 });
 
 // Add an item to a list.
-app.post('/add/list', function (req, res) {
+app.post('/add/item', function (req, res) {
 	// Get data from request body.
 	var id = req.body.id;
 	var text = req.body.text;
 	
 	console.log('Add ' + text + ' to ' + id);
-
-	// TODO change lists datatype for faster data retrieval.
-	// Iterate over lists and add item to list from request.
-	for (var i = 0; i <= lists.length; i++) {
-		var list = lists[i];
-		
-		if (list && list.id == id) {
-			list.items.push({'text': text})
-		}
-	}
+	
+	// Get list and push item.
+	var list = getList(id);
+	list.items.push({'id': uuid.v4(), 'text': text})
 	
 	//TODO send update request to all connected clients.
 
@@ -77,6 +73,47 @@ app.post('/add/list', function (req, res) {
 	res.send(JSON.stringify(lists));
 });
 
+// Remove an item from a list.
+app.post('/remove/item', function (req, res) {
+	// Get data from request body.
+	var id = req.body.id;
+	var listid = req.body.listid;
+	
+	console.log('Remove ' + id + ' from ' + listid);
+	
+	// Get list and remove item.
+	var list = getList(listid);
+	list.items.splice(getItemIndex(list.items, id), 1);
+	
+	//TODO send update request to all connected clients.
+
+	// Return all lists.
+	res.send(JSON.stringify(lists));
+});
+
+// Get list with specified id. {} if no match.
+function getList(id) {
+	for (var i = 0; i <= lists.length; i++) {
+		var list = lists[i];
+		
+		if (list && list.id == id) {
+			return list;
+		}
+	}
+	return {};
+}
+
+// Returns index of item in list of items. -1 if no match.
+function getItemIndex(items, id) {
+	for (var i = 0; i <= items.length; i++) {
+		var item = items[i];
+		
+		if (item && item.id == id) {
+			return i;
+		}
+	}
+	return -1;
+}
 
 var server = app.listen(port, function () {
     console.log('Listening on port %d', server.address().port);

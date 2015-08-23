@@ -3,22 +3,42 @@
 <link rel="import" href="bower_components/paper-item/paper-item.html">
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/iron-signals/iron-signals.html">
 
 <dom-module id="grid-item">
 	<style>
 		paper-card {
 			margin-top: 20px;
-
+			transform: translateZ(0) /* Fixes column rendering bug */
 		}
 		
 		#list-description {
 			font-size: 18px;
 		}
 		
+		#list-actions {
+			text-align: right;
+		}
+		
 		#new-item-input {
-			display: inline-block;
-			width: 75%;
+			margin-top: -20px;
+		}
+		
+		#card-items {
+			display:table;
+			border-collapse:collapse;
+			
+		}
+		
+		#item-body {
+			display: table-cell;
+			width: 100%;
+			padding-left: 10px;
+		}
+		
+		#add-button {
+			
 		}
 	</style>
 
@@ -26,19 +46,22 @@
 		<paper-card heading="{{title}}" image="{{image}}" elevation="2">
 			<div id="list-description" class="card-content"><i>{{description}}</i></div>
 			<template is="dom-repeat" items="[[items]]">
-				<paper-item class="card-actions">
-					<paper-item-body>
+				<paper-item id="card-items" class="card-actions">
+					<paper-item-body id="item-body">
 						<div>{{item.text}}</div>
 					</paper-item-body>
-				<paper-icon-button icon="clear" title="Remove item" on-click="removeItem">
-				</paper-icon-button>
+					<paper-icon-button class="item-button" icon="clear" title="Remove item" on-click="removeItem">
+					</paper-icon-button>
 				</paper-item>
 			</template>
 			<div class="card-actions">
 				<paper-input id="new-item-input" label="New item" type="text" bind-value="{{text}}">
+					<paper-icon-button suffix icon="add" title="Add item" on-click="submitItem">
+					</paper-icon-button>
 				</paper-input>
-				<paper-icon-button icon="add" title="Add item" on-click="submitItem">
-				</paper-icon-button>
+			</div>
+			<div id="list-actions" class="card-actions">
+				<paper-button title="Remove list" on-click="removeList">Delete list</paper-button>
 			</div>
 		</paper-card>
     </template>
@@ -86,6 +109,16 @@
 				
 				// Post query to server.
 				$.post('remove/item', query, function(data) {
+					// Fire updated data event.
+					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
+				});
+			},
+			removeList: function(e) {
+				console.log('Remove list ' + this.title);
+				var query = {'id': this.listid};
+				
+				// Post query to server.
+				$.post('remove/list', query, function(data) {
 					// Fire updated data event.
 					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
 				});

@@ -55,6 +55,22 @@ app.post('/create/list', function (req, res) {
 	res.send(JSON.stringify(lists));
 });
 
+// Remove a list.
+app.post('/remove/list', function (req, res) {
+	// Get data from request body.
+	var id = req.body.id;
+	
+	console.log('Remove list ' + id);
+
+	// Remove list.
+	lists.splice(getItemIndex(lists, id), 1)
+	
+	// TODO send update request to all connected clients.
+	
+	// Return all lists.
+	res.send(JSON.stringify(lists));
+});
+
 // Add an item to a list.
 app.post('/add/item', function (req, res) {
 	// Get data from request body.

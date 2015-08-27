@@ -23,7 +23,7 @@ var lists = [
 	 'description': 'Welcome to PolyLists',
 	 'title': 'PolyLists',
 	 'image': '',
-	 'items': [{'id': uuid.v4(), 'text': 'Add a new list via the navbar'}]}
+	 'items': [{'id': uuid.v4(), 'text': 'Add a new list via the navbar', 'checked': false}]}
 ];
 
 // Get current lists.
@@ -63,7 +63,7 @@ app.post('/remove/list', function (req, res) {
 	console.log('Remove list ' + id);
 
 	// Remove list.
-	lists.splice(getItemIndex(lists, id), 1)
+	lists.splice(getItemIndex(lists, id), 1);
 	
 	// TODO send update request to all connected clients.
 	
@@ -77,11 +77,11 @@ app.post('/add/item', function (req, res) {
 	var id = req.body.id;
 	var text = req.body.text;
 	
-	console.log('Add ' + text + ' to ' + id);
+	console.log('Add ' + text + ' to list ' + id);
 	
 	// Get list and push item.
 	var list = getList(id);
-	list.items.push({'id': uuid.v4(), 'text': text})
+	list.items.push({'id': uuid.v4(), 'text': text, 'checked': false});
 	
 	//TODO send update request to all connected clients.
 
@@ -95,11 +95,30 @@ app.post('/remove/item', function (req, res) {
 	var id = req.body.id;
 	var listid = req.body.listid;
 	
-	console.log('Remove ' + id + ' from ' + listid);
+	console.log('Remove item ' + id + ' from list ' + listid);
 	
 	// Get list and remove item.
 	var list = getList(listid);
 	list.items.splice(getItemIndex(list.items, id), 1);
+	
+	//TODO send update request to all connected clients.
+
+	// Return all lists.
+	res.send(JSON.stringify(lists));
+});
+
+// Toggle checked for an item in a list.
+app.post('/check/item', function (req, res) {
+	// Get data from request body.
+	var id = req.body.id;
+	var listid = req.body.listid;
+	
+	console.log('Toggle check for item ' + id + ' in list ' + listid);
+	
+	// Get list and toggle item check.
+	var list = getList(listid);
+	var item = list.items[getItemIndex(list.items, id)];
+	item.checked = !item.checked;
 	
 	//TODO send update request to all connected clients.
 

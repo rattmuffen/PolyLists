@@ -4,6 +4,7 @@
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="bower_components/iron-signals/iron-signals.html">
 
 <dom-module id="grid-item">
@@ -37,8 +38,9 @@
 			padding-left: 10px;
 		}
 		
-		#add-button {
-			
+		paper-checkbox[checked] /deep/ #checkboxLabel {
+			text-decoration: line-through;
+			color: gray;
 		}
 	</style>
 
@@ -48,7 +50,7 @@
 			<template is="dom-repeat" items="[[items]]">
 				<paper-item id="card-items" class="card-actions">
 					<paper-item-body id="item-body">
-						<div>{{item.text}}</div>
+						<paper-checkbox checked="{{item.checked}}" on-click="toggleItem">{{item.text}}</paper-checkbox>
 					</paper-item-body>
 					<paper-icon-button class="item-button" icon="clear" title="Remove item" on-click="removeItem">
 					</paper-icon-button>
@@ -104,11 +106,23 @@
 			removeItem: function(e) {
 				var id = e.model.item.id;
 				
-				console.log('Remove item ' + id + 'from list ' + this.title);
+				console.log('Remove item ' + e.model.item.text + ' from list ' + this.title);
 				var query = {'id': id, 'listid': this.listid};
 				
 				// Post query to server.
 				$.post('remove/item', query, function(data) {
+					// Fire updated data event.
+					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
+				});
+			},
+			toggleItem: function(e) {
+				var id = e.model.item.id;
+				
+				console.log('Toggle item ' + e.model.item.text + ' in list ' + this.title);
+				var query = {'id': id, 'listid': this.listid};
+				
+				// Post query to server.
+				$.post('check/item', query, function(data) {
 					// Fire updated data event.
 					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
 				});

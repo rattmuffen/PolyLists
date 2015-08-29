@@ -1,27 +1,21 @@
 <!DOCTYPE html>
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="bower_components/iron-signals/iron-signals.html">
 
 <link rel="import" href="grid-item.html">
 
 <dom-module id="list-grid">
 	<style>
-		
 		#listgrid {
 			-webkit-columns: 300px 3;
 			-moz-columns: 300px 3;
 			columns: 300px 3;
 		}
-		
 	</style>
 
     <template>
 		<!-- Auto fetch lists from server -->
 		<iron-ajax auto url="get/lists" handle-as="json" on-response="response"></iron-ajax>
-		
-		<!-- Update signal listener -->
-		<iron-signals on-iron-signal-update="update"></iron-signals>
-		
+
 		<div id="listgrid">
 			<template is="dom-repeat" items="[[data]]">
 				<grid-item
@@ -45,10 +39,15 @@
 				this.data =  request.detail.response;
 				console.log(this.data)
 			},
-			update: function(e, detail, sender) {
-				console.log('Recieved data update...');
-				this.data =  JSON.parse(detail);
+			update: function(data) {
+				this.data = JSON.parse(data);
 			}
+		});
+		
+		var socket = io();
+		socket.on('update-data', function(data) {
+			console.log('Recieved data update.');
+			$('#list-grid')[0].update(data);
 		});
 	</script>
 </dom-module>

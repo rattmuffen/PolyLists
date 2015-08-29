@@ -5,7 +5,6 @@
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
-<link rel="import" href="bower_components/iron-signals/iron-signals.html">
 
 <dom-module id="grid-item">
 	<style>
@@ -98,10 +97,7 @@
 				//TODO reset variables here.
 				
 				// Post query to server.
-				$.post('add/item', query, function(data) {
-					// Fire updated data event.
-					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
-				});
+				$.post('add/item', query)
 			},
 			removeItem: function(e) {
 				var id = e.model.item.id;
@@ -110,10 +106,7 @@
 				var query = {'id': id, 'listid': this.listid};
 				
 				// Post query to server.
-				$.post('remove/item', query, function(data) {
-					// Fire updated data event.
-					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
-				});
+				$.post('remove/item', query);
 			},
 			toggleItem: function(e) {
 				var id = e.model.item.id;
@@ -122,20 +115,14 @@
 				var query = {'id': id, 'listid': this.listid};
 				
 				// Post query to server.
-				$.post('check/item', query, function(data) {
-					// Fire updated data event.
-					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
-				});
+				$.post('check/item', query)
 			},
 			removeList: function(e) {
 				console.log('Remove list ' + this.title);
 				var query = {'id': this.listid};
 				
 				// Post query to server.
-				$.post('remove/list', query, function(data) {
-					// Fire updated data event.
-					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
-				});
+				$.post('remove/list', query)
 			}
 		});
 	</script>

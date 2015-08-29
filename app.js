@@ -5,11 +5,14 @@ var express = require('express');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
-var http = require('http');
-var app = express();
 var fs = require('fs');
 var request = require('request');
 var uuid = require('node-uuid');
+
+
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
 
 var port = process.env.PORT || 7845;
 
@@ -25,6 +28,10 @@ var lists = [
 	 'image': '',
 	 'items': [{'id': uuid.v4(), 'text': 'Add a new list via the navbar', 'checked': false}]}
 ];
+
+io.on('connection', function (socket) {
+	console.log('Client connected from: ' + socket.handshake.address);
+});
 
 // Get current lists.
 app.get('/get/lists', function (req, res) {
@@ -49,10 +56,9 @@ app.post('/create/list', function (req, res) {
 		'items': []
 	});
 	
-	// TODO send update request to all connected clients.
-	
-	// Return all lists.
-	res.send(JSON.stringify(lists));
+	// Send updated data and end.
+	sendDataUpdate();
+	res.end();
 });
 
 // Remove a list.
@@ -65,10 +71,9 @@ app.post('/remove/list', function (req, res) {
 	// Remove list.
 	lists.splice(getItemIndex(lists, id), 1);
 	
-	// TODO send update request to all connected clients.
-	
-	// Return all lists.
-	res.send(JSON.stringify(lists));
+	// Send updated data and end.
+	sendDataUpdate();
+	res.end();
 });
 
 // Add an item to a list.
@@ -83,10 +88,9 @@ app.post('/add/item', function (req, res) {
 	var list = getList(id);
 	list.items.push({'id': uuid.v4(), 'text': text, 'checked': false});
 	
-	//TODO send update request to all connected clients.
-
-	// Return all lists.
-	res.send(JSON.stringify(lists));
+	// Send updated data and end.
+	sendDataUpdate();
+	res.end();
 });
 
 // Remove an item from a list.
@@ -101,10 +105,9 @@ app.post('/remove/item', function (req, res) {
 	var list = getList(listid);
 	list.items.splice(getItemIndex(list.items, id), 1);
 	
-	//TODO send update request to all connected clients.
-
-	// Return all lists.
-	res.send(JSON.stringify(lists));
+	// Send updated data and end.
+	sendDataUpdate();
+	res.end();
 });
 
 // Toggle checked for an item in a list.
@@ -120,11 +123,15 @@ app.post('/check/item', function (req, res) {
 	var item = list.items[getItemIndex(list.items, id)];
 	item.checked = !item.checked;
 	
-	//TODO send update request to all connected clients.
-
-	// Return all lists.
-	res.send(JSON.stringify(lists));
+	// Send updated data and end.
+	sendDataUpdate();
+	res.end();
 });
+
+// Emits update event with list data to all connected clients.
+function sendDataUpdate() {
+	io.emit('update-data', JSON.stringify(lists));
+}
 
 // Get list with specified id. {} if no match.
 function getList(id) {
@@ -150,6 +157,6 @@ function getItemIndex(items, id) {
 	return -1;
 }
 
-var server = app.listen(port, function () {
+var server = http.listen(port, function () {
     console.log('Listening on port %d', server.address().port);
 });

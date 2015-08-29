@@ -4,7 +4,6 @@
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 <link rel="import" href="bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="bower_components/iron-signals/iron-signals.html">
 
 <dom-module id="create-dialog">
 	<style>
@@ -53,10 +52,7 @@
 				//TODO reset variables here.
 				
 				// Post query to server.
-				$.post('create/list', query, function(data) {
-					// Fire updated data event.
-					document.querySelector('#newListDialog').fire('iron-signal', {'name': 'update', 'data': data});
-				});
+				$.post('create/list', query)
 			}
 		});
 	</script>

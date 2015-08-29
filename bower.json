@@ -6,6 +6,7 @@
 		"iron-elements": "PolymerElements/iron-elements#latest",
 		"paper-elements": "PolymerElements/paper-elements#latest",
 		"paper-card": "PolymerElements/paper-card#latest",
-		"jquery": "latest"
+		"jquery": "latest",
+		"socket.io-client": "latest"
 	}
 }

@@ -9,7 +9,8 @@
         "body-parser": "~1.0.0",
         "method-override": "~1.0.0",
 		"request": "latest",
-		"node-uuid": "latest"
+		"node-uuid": "latest",
+		"socket.io": "latest"
     },
     "scripts": {
         "start": "node app.js"

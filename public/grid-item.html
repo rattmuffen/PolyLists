@@ -5,12 +5,44 @@
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="bower_components/iron-icons/iron-icons.html">
 
 <dom-module id="grid-item">
+	<link rel="import" type="css" href="css/colors.css">
+	
 	<style>
+		paper-toolbar {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 60px;
+		}
+		
+		.title {
+			margin-left: 0px !important;
+		}
+		
+		paper-icon-button {
+			margin-right: 0px !important;
+		}
+		
+		img {
+			width: 100%;
+		}
+		
+		#paper-header {
+			height: 30px;
+			margin-bottom: -2px;
+		}
+
 		paper-card {
-			margin-top: 20px;
-			transform: translateZ(0) /* Fixes column rendering bug */
+			margin: 20px;
+			transform: translateZ(0);
 		}
 		
 		#list-description {
@@ -21,14 +53,13 @@
 			text-align: right;
 		}
 		
-		#new-item-input {
+		.new-item-input {
 			margin-top: -20px;
 		}
 		
 		#card-items {
-			display:table;
-			border-collapse:collapse;
-			
+			display: table;
+			border-collapse: collapse;
 		}
 		
 		#item-body {
@@ -44,26 +75,43 @@
 	</style>
 
     <template>
-		<paper-card heading="{{title}}" image="{{image}}" elevation="2">
-			<div id="list-description" class="card-content"><i>{{description}}</i></div>
-			<template is="dom-repeat" items="[[items]]">
-				<paper-item id="card-items" class="card-actions">
-					<paper-item-body id="item-body">
-						<paper-checkbox checked="{{item.checked}}" on-click="toggleItem">{{item.text}}</paper-checkbox>
-					</paper-item-body>
-					<paper-icon-button class="item-button" icon="clear" title="Remove item" on-click="removeItem">
-					</paper-icon-button>
-				</paper-item>
+		<paper-card class="griditem" elevation="2">
+			<div id="paper-header" class="card-content">
+				<paper-toolbar id="{{color}}">
+					<div class="title">{{title}}</div>
+					<paper-icon-button icon="clear" title="Remove list" on-click="removeList"></paper-icon-button>
+				</paper-toolbar>
+			</div>
+			<template is="dom-if" if="{{image}}">
+				<img src="{{image}}"/>
+			</template>
+			<template is="dom-if" if="{{description}}">
+				<div id="list-description" class="card-content"><i>{{description}}</i></div>
+			</template>
+			<template is="dom-if" if="{{items}}">
+				<template is="dom-repeat" items="[[items]]">
+					<paper-item id="card-items" class="card-actions">
+						<paper-item-body id="item-body">
+							<template is="dom-if" if="{{!checkable}}">
+								<p>{{item.text}}</p>
+							</template>
+							<template is="dom-if" if="{{checkable}}">
+								<paper-checkbox id="{{color}}" class="item-checkbox" checked="{{item.checked}}" value="{{checkable}}" on-click="toggleItem">
+									<p>{{item.text}}</p>
+								</paper-checkbox>
+							</template>
+						</paper-item-body>
+						<paper-icon-button class="item-button" icon="clear" title="Remove item" on-click="removeItem">
+						</paper-icon-button>
+					</paper-item>
+				</template>
 			</template>
 			<div class="card-actions">
-				<paper-input id="new-item-input" label="New item" type="text" bind-value="{{text}}">
+				<paper-input id="{{color}}" class="new-item-input" label="New item" type="text" bind-value="{{text}}">
 					<paper-icon-button suffix icon="add" title="Add item" on-click="submitItem">
 					</paper-icon-button>
 				</paper-input>
-			</div>
-			<div id="list-actions" class="card-actions">
-				<paper-button title="Remove list" on-click="removeList">Delete list</paper-button>
-			</div>
+			</div> 
 		</paper-card>
     </template>
 
@@ -83,6 +131,12 @@
 				image: {
 					type: String
 				},
+				checkable: {
+					type: Boolean
+				},
+				color: {
+					type: String
+				},
 				items: {
 					type: Array
 				},
@@ -90,6 +144,7 @@
 					type: String
 				},
 			},
+			ready: function() {},
 			submitItem: function() {
 				console.log('Submit item to list ' + this.title);
 				var query = {'id': this.listid, 'text': this.text};
@@ -109,13 +164,15 @@
 				$.post('remove/item', query);
 			},
 			toggleItem: function(e) {
-				var id = e.model.item.id;
-				
-				console.log('Toggle item ' + e.model.item.text + ' in list ' + this.title);
-				var query = {'id': id, 'listid': this.listid};
-				
-				// Post query to server.
-				$.post('check/item', query)
+				if (this.checkable) {
+					var id = e.model.item.id;
+
+					console.log('Toggle item ' + e.model.item.text + ' in list ' + this.title);
+					var query = {'id': id, 'listid': this.listid};
+
+					// Post query to server.
+					$.post('check/item', query)
+				}
 			},
 			removeList: function(e) {
 				console.log('Remove list ' + this.title);

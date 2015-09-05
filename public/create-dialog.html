@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/paper-item/paper-item.html">
+<link rel="import" href="bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="bower_components/iron-icons/iron-icons.html">
 
@@ -19,11 +23,20 @@
     <template>
 		<paper-dialog modal id="newListDialog">
 			<h2>Create new list</h2>
+			<paper-dropdown-menu label="List color">
+				<paper-menu class="dropdown-content">
+					<paper-item>Blue</paper-item>
+					<paper-item>Green</paper-item>
+					<paper-item>Yellow</paper-item>
+					<paper-item>Red</paper-item>
+				</paper-menu>
+			</paper-dropdown-menu>
+			<paper-checkbox> Make items checkable</paper-checkbox>
 			
 			<paper-input label="Title" type="text" bind-value="{{title}}"></paper-input>
 			<paper-input label="Description" type="text" bind-value="{{description}}"></paper-input>
 			<paper-input label="Image URL" type="text" bind-value="{{image}}"></paper-input>
-				
+			
 			<paper-button dialog-dismiss>Discard</paper-button>
 		    <paper-button dialog-confirm on-click="submitList">
 				<iron-icon icon="check"></iron-icon>Save
@@ -43,12 +56,25 @@
 				},
 				image: {
 					type: String
+				},
+				color: {
+					type: String
 				}
 			},
 			submitList: function() {
 				console.log('Submit list ' + this.title);
-				var query = {'title': this.title, 'description': this.description, 'image': this.image};
 				
+				var color = $("[aria-selected=true]").text().trim().toLowerCase();
+				if (color === '') {
+					color = 'blue';
+				}
+				
+				var query = {'title': this.title,
+							 'color': color,
+							 'description': this.description,
+							 'image': this.image,
+							 'checkable': $('paper-checkbox').prop('checked')};
+
 				//TODO reset variables here.
 				
 				// Post query to server.

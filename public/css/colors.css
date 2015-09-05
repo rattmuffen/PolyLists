@@ -1,0 +1,62 @@
+/* List toolbar */
+paper-toolbar#green {
+	--paper-toolbar-background: var(--paper-green-500);
+}
+
+paper-toolbar#blue {
+	--paper-toolbar-background: var(--paper-blue-500);
+}
+	
+paper-toolbar#red {
+	--paper-toolbar-background: var(--paper-red-500);
+}
+
+paper-toolbar#yellow {
+	--paper-toolbar-background: var(--paper-yellow-700);
+}
+	
+/* List item checkboxes */
+paper-checkbox#green {
+	--paper-checkbox-checked-color: var(--paper-green-500);
+	--paper-checkbox-checked-ink-color: var(--paper-green-500);
+	--paper-checkbox-unchecked-color: var(--paper-green-900);
+	--paper-checkbox-unchecked-ink-color: var(--paper-green-900);
+}
+
+paper-checkbox#blue {
+	--paper-checkbox-checked-color: var(--paper-blue-500);
+	--paper-checkbox-checked-ink-color: var(--paper-blue-500);
+	--paper-checkbox-unchecked-color: var(--paper-blue-900);
+	--paper-checkbox-unchecked-ink-color: var(--paper-blue-900);
+}
+
+paper-checkbox#red {
+	--paper-checkbox-checked-color: var(--paper-red-500);
+	--paper-checkbox-checked-ink-color: var(--paper-red-500);
+	--paper-checkbox-unchecked-color: var(--paper-red-900);
+	--paper-checkbox-unchecked-ink-color: var(--paper-red-900);
+}
+	
+paper-checkbox#yellow {
+	--paper-checkbox-checked-color: var(--paper-yellow-700);
+	--paper-checkbox-checked-ink-color: var(--paper-yellow-700);
+	--paper-checkbox-unchecked-color: var(--paper-yellow-900);
+	--paper-checkbox-unchecked-ink-color: var(--paper-yellow-900);
+}
+	
+/* List item inputs */
+paper-input#green {
+	--paper-input-container-focus-color: var(--paper-green-500);
+}
+	
+paper-input#blue {
+	--paper-input-container-focus-color: var(--paper-blue-500);
+}
+
+paper-input#red {
+	--paper-input-container-focus-color: var(--paper-red-500);
+}
+	
+paper-input#yellow {
+	--paper-input-container-focus-color: var(--paper-yellow-700);
+}

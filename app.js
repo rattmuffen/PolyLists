@@ -25,6 +25,8 @@ var lists = [
 	{'id': '-1',
 	 'description': 'Welcome to PolyLists',
 	 'title': 'PolyLists',
+	 'checkable': true,
+	 'color': 'green',
 	 'image': '',
 	 'items': [{'id': uuid.v4(), 'text': 'Add a new list via the navbar', 'checked': false}]}
 ];
@@ -41,9 +43,11 @@ app.get('/get/lists', function (req, res) {
 // Create a new list.
 app.post('/create/list', function (req, res) {
 	// Get data from request body.
-	var title = req.body.title;
+	var title = req.body.title != null ? req.body.title : 'Untitled';
 	var description = req.body.description;
+	var color = req.body.color;
 	var image = req.body.image != null ? req.body.image : '';
+	var checkable = req.body.checkable == 'true';
 	
 	console.log('Create list ' + title);
 
@@ -52,6 +56,8 @@ app.post('/create/list', function (req, res) {
 		'id': uuid.v4(),
 		'title': title,
 		'image': image,
+		'color': color,
+		'checkable': checkable,
 		'description': description,
 		'items': []
 	});

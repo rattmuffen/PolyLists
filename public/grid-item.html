@@ -9,7 +9,7 @@
 <link rel="import" href="bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="bower_components/paper-menu-button/paper-menu-button.html">
-<link rel="import" href="bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="bower_components/iron-icons/image-icons.html">
 
 <dom-module id="grid-item">
 	<link rel="import" type="css" href="css/colors.css">
@@ -53,6 +53,10 @@
 			text-align: right;
 		}
 		
+		.list-edit {
+			margin: 20px;
+		}
+		
 		.new-item-input {
 			margin-top: -20px;
 		}
@@ -68,7 +72,7 @@
 			padding-left: 10px;
 		}
 		
-		paper-checkbox[checked] /deep/ #checkboxLabel {
+		paper-item-body /deep/ paper-checkbox[checked] /deep/ #checkboxLabel {
 			text-decoration: line-through;
 			color: gray;
 		}
@@ -79,40 +83,52 @@
 			<div id="paper-header" class="card-content">
 				<paper-toolbar id="{{color}}">
 					<div class="title">{{title}}</div>
+					<paper-icon-button icon="image:edit" title="Edit list" on-click="toggleEdit"></paper-icon-button>
 					<paper-icon-button icon="clear" title="Remove list" on-click="removeList"></paper-icon-button>
 				</paper-toolbar>
 			</div>
-			<template is="dom-if" if="{{image}}">
-				<img src="{{image}}"/>
+			<template is="dom-if" if="{{editMode}}">
+				<div class="list-edit">
+					<paper-checkbox id="{{listid}}" class="edit-checkbox" checked="{{checkable}}"> Make items checkable</paper-checkbox>
+					<paper-input label="Title" type="text" value="{{title}}" bind-value="{{title}}"></paper-input>
+					<paper-input label="Description" value="{{description}}" type="text" bind-value="{{description}}"></paper-input>
+					<paper-input label="Image URL" value="{{image}}" type="text" bind-value="{{image}}"></paper-input>
+				</div>
 			</template>
-			<template is="dom-if" if="{{description}}">
-				<div id="list-description" class="card-content"><i>{{description}}</i></div>
-			</template>
-			<template is="dom-if" if="{{items}}">
-				<template is="dom-repeat" items="[[items]]">
-					<paper-item id="card-items" class="card-actions">
-						<paper-item-body id="item-body">
-							<template is="dom-if" if="{{!checkable}}">
-								<p>{{item.text}}</p>
-							</template>
-							<template is="dom-if" if="{{checkable}}">
-								<paper-checkbox id="{{color}}" class="item-checkbox" checked="{{item.checked}}" value="{{checkable}}" on-click="toggleItem">
-									<p>{{item.text}}</p>
-								</paper-checkbox>
-							</template>
-						</paper-item-body>
-						<paper-icon-button class="item-button" icon="clear" title="Remove item" on-click="removeItem">
-						</paper-icon-button>
-					</paper-item>
+			<template is="dom-if" if="{{!editMode}}">
+				<template is="dom-if" if="{{image}}">
+					<img src="{{image}}"/>
 				</template>
+				<template is="dom-if" if="{{description}}">
+					<div id="list-description" class="card-content"><i>{{description}}</i></div>
+				</template>
+				<template is="dom-if" if="{{items}}">
+					<template is="dom-repeat" items="[[items]]">
+						<paper-item id="card-items" class="card-actions">
+							<paper-item-body id="item-body">
+								<template is="dom-if" if="{{!checkable}}">
+									<p>{{item.text}}</p>
+								</template>
+								<template is="dom-if" if="{{checkable}}">
+									<paper-checkbox id="{{color}}" class="item-checkbox" checked="{{item.checked}}" value="{{checkable}}" on-click="toggleItem">
+										<p>{{item.text}}</p>
+									</paper-checkbox>
+								</template>
+							</paper-item-body>
+							<paper-icon-button class="item-button" icon="clear" title="Remove item" on-click="removeItem">
+							</paper-icon-button>
+						</paper-item>
+					</template>
+				</template>
+				<div class="card-actions">
+					<paper-input id="{{color}}" class="new-item-input" label="New item" type="text" bind-value="{{text}}">
+						<paper-icon-button suffix icon="add" title="Add item" on-click="submitItem">
+						</paper-icon-button>
+					</paper-input>
+				</div>
 			</template>
-			<div class="card-actions">
-				<paper-input id="{{color}}" class="new-item-input" label="New item" type="text" bind-value="{{text}}">
-					<paper-icon-button suffix icon="add" title="Add item" on-click="submitItem">
-					</paper-icon-button>
-				</paper-input>
-			</div> 
 		</paper-card>
+		
     </template>
 
 	<script>
@@ -143,8 +159,31 @@
 				text: {
 					type: String
 				},
+				editMode: {
+					type: Boolean,
+					value: false
+				}
 			},
-			ready: function() {},
+			ready: function() {
+				
+			},
+			toggleEdit: function() {
+				// If in edit view and press edit button, send update to server.
+				if (this.editMode) {
+					console.log('Update list ' + this.title);
+	
+					var query = {'id': this.listid,
+								 'title': this.title,
+								 'description': this.description,
+								 'image': this.image,
+								 'color': this.color,
+								 'checkable': $('#' + this.listid).prop('checked')};
+					
+					// Post query to server.
+					$.post('update/list', query)
+				}
+				this.editMode = !this.editMode;
+			},
 			submitItem: function() {
 				console.log('Submit item to list ' + this.title);
 				var query = {'id': this.listid, 'text': this.text};

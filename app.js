@@ -22,7 +22,7 @@ app.use(morgan('dev'));
 
 //TODO change datatype for faster data retrieval.
 var lists = [
-	{'id': '-1',
+	{'id': uuid.v4(),
 	 'description': 'Welcome to PolyLists',
 	 'title': 'PolyLists',
 	 'checkable': true,
@@ -76,6 +76,31 @@ app.post('/remove/list', function (req, res) {
 
 	// Remove list.
 	lists.splice(getItemIndex(lists, id), 1);
+	
+	// Send updated data and end.
+	sendDataUpdate();
+	res.end();
+});
+
+// Update a list.
+app.post('/update/list', function (req, res) {
+	// Get data from request body.
+	var id = req.body.id;
+	var title = req.body.title != null ? req.body.title : 'Untitled';
+	var description = req.body.description;
+	var color = req.body.color;
+	var image = req.body.image != null ? req.body.image : '';
+	var checkable = req.body.checkable == 'true';
+	
+	console.log('Update list ' + title);
+
+	var list = getList(id);
+	
+	list.title = title;
+	list.description = description;
+	list.color = color;
+	list.image = image;
+	list.checkable = checkable;
 	
 	// Send updated data and end.
 	sendDataUpdate();

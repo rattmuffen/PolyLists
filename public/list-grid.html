@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/juicy-tile-list/dist/juicy-tile-list.html">
 
 <link rel="import" href="grid-item.html">
 
 <dom-module id="list-grid">
 	<style>
-		#listgrid {
-			-webkit-columns: 300px 3;
-			-moz-columns: 300px 3;
-			columns: 300px 3;
+		.list-grid-item {
+			width: 400px;
+			float: left;
 		}
 	</style>
 
@@ -16,9 +16,10 @@
 		<!-- Auto fetch lists from server -->
 		<iron-ajax auto url="get/lists" handle-as="json" on-response="response"></iron-ajax>
 
-		<div id="listgrid">
+		<juicy-tile-list id="listgrid"
+						 defaultTileSetup="{'precalculateHeight': true, 'width': '400px'}">
 			<template is="dom-repeat" items="[[data]]">
-				<grid-item
+				<grid-item class="list-grid-item"
 						   listid="{{item.id}}"
 						   title="{{item.title}}"
 						   image="{{item.image}}"
@@ -28,7 +29,7 @@
 						   description="{{item.description}}">
 				</grid-item> 
 			</template>
-		</div>
+		</juicy-tile-list>
     </template>
 	
 	<script>

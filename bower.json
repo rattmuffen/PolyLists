@@ -7,6 +7,11 @@
 		"paper-elements": "PolymerElements/paper-elements#latest",
 		"paper-card": "PolymerElements/paper-card#latest",
 		"jquery": "latest",
-		"socket.io-client": "latest"
+		"socket.io-client": "latest",
+		"juicy-tile-list": "latest"
+	},
+	"resolutions": {
+		"webcomponentsjs": "^0.7.2",
+		"polymer": "^1.0.0"
 	}
 }

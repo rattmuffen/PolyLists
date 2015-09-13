@@ -10,6 +10,7 @@ NPM:
 Bower:
 * **[Polymer](https://www.polymer-project.org/1.0/)**
 * **[jquery](https://jquery.com/)**
+* **[juicy-tile-list](https://github.com/Juicy/juicy-tile-list)**
 
 ## How to install
 To install the NPM dependencies, open a terminal and execute the following command :

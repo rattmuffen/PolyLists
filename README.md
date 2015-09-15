@@ -25,3 +25,6 @@ To install the Bower dependencies, install [bower](http://bower.io/) with `npm i
 Execute this command to start the application:
 
     node app.js
+
+## Demo
+Check out a live demo [here](https://polylists.herokuapp.com/)!

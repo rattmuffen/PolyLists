@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="bower_components/juicy-tile-list/dist/juicy-tile-list.html">
 
 <link rel="import" href="grid-item.html">
@@ -30,6 +31,7 @@
 				</grid-item> 
 			</template>
 		</juicy-tile-list>
+		<paper-toast duration="2000" text=""></paper-toast>
     </template>
 	
 	<script>
@@ -43,14 +45,20 @@
 				console.log(this.data)
 			},
 			update: function(data) {
-				this.data = JSON.parse(data);
+				// Set lists.
+				this.data = data.lists;
+				
+				// Show toast with update info.
+				var updateEvent = data.event;
+				$('paper-toast').prop('text', updateEvent);
+				$('paper-toast')[0].show();
 			}
 		});
 		
 		var socket = io();
 		socket.on('update-data', function(data) {
 			console.log('Recieved data update.');
-			$('#list-grid')[0].update(data);
+			$('#list-grid')[0].update(JSON.parse(data));
 		});
 	</script>
 </dom-module>

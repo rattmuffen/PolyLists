@@ -197,7 +197,7 @@
 				var id = e.model.item.id;
 				
 				console.log('Remove item ' + e.model.item.text + ' from list ' + this.title);
-				var query = {'id': id, 'listid': this.listid};
+				var query = {'id': id, 'listid': this.listid, 'text': e.model.item.text};
 				
 				// Post query to server.
 				$.post('remove/item', query);

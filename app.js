@@ -63,7 +63,7 @@ app.post('/create/list', function (req, res) {
 	});
 	
 	// Send updated data and end.
-	sendDataUpdate();
+	sendDataUpdate('List \'' + title + '\' was created.');
 	res.end();
 });
 
@@ -75,10 +75,11 @@ app.post('/remove/list', function (req, res) {
 	console.log('Remove list ' + id);
 
 	// Remove list.
+	var list = getList(id);
 	lists.splice(getItemIndex(lists, id), 1);
 	
 	// Send updated data and end.
-	sendDataUpdate();
+	sendDataUpdate('\'' + list.title + '\' was removed.');
 	res.end();
 });
 
@@ -103,7 +104,7 @@ app.post('/update/list', function (req, res) {
 	list.checkable = checkable;
 	
 	// Send updated data and end.
-	sendDataUpdate();
+	sendDataUpdate('List \'' + title + '\' was updated.');
 	res.end();
 });
 
@@ -120,7 +121,7 @@ app.post('/add/item', function (req, res) {
 	list.items.push({'id': uuid.v4(), 'text': text, 'checked': false});
 	
 	// Send updated data and end.
-	sendDataUpdate();
+	sendDataUpdate('\'' + text + '\' was added to \'' + list.title + '\'.');
 	res.end();
 });
 
@@ -128,6 +129,7 @@ app.post('/add/item', function (req, res) {
 app.post('/remove/item', function (req, res) {
 	// Get data from request body.
 	var id = req.body.id;
+	var text = req.body.text;
 	var listid = req.body.listid;
 	
 	console.log('Remove item ' + id + ' from list ' + listid);
@@ -137,7 +139,7 @@ app.post('/remove/item', function (req, res) {
 	list.items.splice(getItemIndex(list.items, id), 1);
 	
 	// Send updated data and end.
-	sendDataUpdate();
+	sendDataUpdate('\'' + text + '\' was removed from \'' + list.title + '\'.');
 	res.end();
 });
 
@@ -155,13 +157,14 @@ app.post('/check/item', function (req, res) {
 	item.checked = !item.checked;
 	
 	// Send updated data and end.
-	sendDataUpdate();
+	sendDataUpdate('\'' + item.text + '\' was toggled in \'' + list.title + '\'');
 	res.end();
 });
 
 // Emits update event with list data to all connected clients.
-function sendDataUpdate() {
-	io.emit('update-data', JSON.stringify(lists));
+function sendDataUpdate(event) {
+	var data = {'lists': lists, 'event': event};
+	io.emit('update-data', JSON.stringify(data));
 }
 
 // Get list with specified id. {} if no match.

@@ -21,7 +21,7 @@
 						 defaultTileSetup="{'precalculateHeight': true, 'width': '400px'}">
 			<template is="dom-repeat" items="[[data]]">
 				<grid-item class="list-grid-item"
-						   listid="{{item.id}}"
+						   listid="{{item._id}}"
 						   title="{{item.title}}"
 						   image="{{item.image}}"
 						   items="{{item.items}}"
@@ -45,6 +45,9 @@
 				console.log(this.data)
 			},
 			update: function(data) {
+				// Hide any open toasts.
+				$('paper-toast')[0].hide();
+				
 				// Set lists.
 				this.data = data.lists;
 				

@@ -215,7 +215,7 @@
 			},
 			removeList: function(e) {
 				console.log('Remove list ' + this.title);
-				var query = {'id': this.listid};
+				var query = {'id': this.listid, 'title': this.title};
 				
 				// Post query to server.
 				$.post('remove/list', query)

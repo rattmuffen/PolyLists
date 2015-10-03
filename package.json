@@ -11,7 +11,9 @@
         "method-override": "~1.0.0",
 		"request": "latest",
 		"node-uuid": "latest",
-		"socket.io": "latest"
+		"socket.io": "latest",
+		"mongodb": "latest",
+		"monk": "latest"
     },
     "scripts": {
         "start": "node app.js",

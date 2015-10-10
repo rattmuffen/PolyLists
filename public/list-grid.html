@@ -19,15 +19,16 @@
 
 		<juicy-tile-list id="listgrid"
 						 defaultTileSetup="{'precalculateHeight': true, 'width': '400px'}">
-			<template is="dom-repeat" items="[[data]]">
+			<template is="dom-repeat" items="{{data}}" as="list" filter="{{filter(searchTerm)}}">
 				<grid-item class="list-grid-item"
-						   listid="{{item._id}}"
-						   title="{{item.title}}"
-						   image="{{item.image}}"
-						   items="{{item.items}}"
-						   checkable="{{item.checkable}}"
-						   color="{{item.color}}"
-						   description="{{item.description}}">
+						   listid="{{list._id}}"
+						   title="{{list.title}}"
+						   image="{{list.image}}"
+						   items="{{list.items}}"
+						   checkable="{{list.checkable}}"
+						   color="{{list.color}}"
+						   description="{{list.description}}",
+						   created="{{list.created}}">
 				</grid-item> 
 			</template>
 		</juicy-tile-list>
@@ -39,6 +40,12 @@
 			is: "list-grid",
 			ready: function () {
 				this.data = [];
+			},
+			properties: {
+				searchTerm: {
+					type: String,
+					value: ''
+				}
 			},
 			response: function(request) {
 				this.data =  request.detail.response;
@@ -55,13 +62,32 @@
 				var updateEvent = data.event;
 				$('paper-toast').prop('text', updateEvent);
 				$('paper-toast')[0].show();
+			},
+			filter: function(searchTerm) {  
+				return function(list) {
+					if (!searchTerm) return true;
+					if (!list) return false;
+					
+					// Search in list title and description.
+					var titleHit = list.title && list.title.search(new RegExp(searchTerm, 'i')) != -1;
+					return titleHit ||
+						(list.description && list.description.search(new RegExp(searchTerm, 'i')) != -1)
+				};
+			},
+			search: function (searchTerm) {
+				this.searchTerm = searchTerm;
 			}
 		});
+		
+		// Catch fire event from main-toobar.
+		document.querySelector('main-toolbar').addEventListener('search', function (e) {
+			document.querySelector('list-grid').search(e.detail.searchTerm);
+		})
 		
 		var socket = io();
 		socket.on('update-data', function(data) {
 			console.log('Recieved data update.');
-			$('#list-grid')[0].update(JSON.parse(data));
+			document.querySelector('list-grid').update(JSON.parse(data));
 		});
 	</script>
 </dom-module>

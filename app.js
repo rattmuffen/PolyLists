@@ -52,12 +52,15 @@ app.post('/create/list', function (req, res) {
 	console.log('Create list ' + title);
 
 	// Create new list.
+	var now = new Date();
 	var list = {
 		'title': title,
 		'image': image,
 		'color': color,
 		'checkable': checkable,
 		'description': description,
+		'created': now,
+		'updated': now,
 		'items': []
 	};
 	
@@ -96,6 +99,7 @@ app.post('/update/list', function (req, res) {
 	var color = req.body.color;
 	var image = req.body.image != null ? req.body.image : '';
 	var checkable = req.body.checkable == 'true';
+	var created = req.body.created;
 	
 	console.log('Update list ' + title);
 
@@ -109,6 +113,8 @@ app.post('/update/list', function (req, res) {
 		list.color = color;
 		list.image = image;
 		list.checkable = checkable;
+		list.created = created;
+		list.updated = new Date();
 
 		// Update in DB.
 		listDB.updateById(id, list);

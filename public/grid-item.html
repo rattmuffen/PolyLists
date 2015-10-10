@@ -159,6 +159,9 @@
 				text: {
 					type: String
 				},
+				created: {
+					type: Date
+				},
 				editMode: {
 					type: Boolean,
 					value: false
@@ -177,7 +180,8 @@
 								 'description': this.description,
 								 'image': this.image,
 								 'color': this.color,
-								 'checkable': $('#' + this.listid).prop('checked')};
+								 'checkable': $('#' + this.listid).prop('checked'),
+								 'created': this.created};
 					
 					// Post query to server.
 					$.post('update/list', query)

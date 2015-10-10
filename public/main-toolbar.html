@@ -1,16 +1,29 @@
 <!DOCTYPE html>
 <link rel="import" href="bower_components/paper-button/paper-button.html">
 <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="create-dialog.html">
 
 <dom-module id="main-toolbar">
 	<style>
+		paper-input {
+			--paper-input-container-color: white;
+			--paper-input-container-focus-color: white;
+			--paper-input-container-input-color: white;
+		
+			margin-bottom: 20px;
+		}
 	</style>
 
     <template>
 		<paper-toolbar>
 			<div class="title">PolyLists</div>
+			<paper-input id="search-input"
+						 on-input="search"
+						 bind-value="{{searchTerm}}"
+						 placeholder="Search lists">
+			</paper-input>
 			<paper-button on-click="toggleDialog">New list</paper-button>
 		</paper-toolbar>
 		
@@ -20,9 +33,18 @@
 	<script>
 		Polymer({
 			is: "main-toolbar",
+			properties: {
+				searchTerm: {
+					type: String
+				}
+			},
 			toggleDialog: function() {
 				var dialog = document.getElementById('newListDialog');
 				dialog.toggle();
+			},
+			search: function() {
+				// Fire search event.
+				this.fire('search', {searchTerm: this.searchTerm});
 			}
 		});
 	</script>

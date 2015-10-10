@@ -2,6 +2,7 @@
 /public/bower_components
 /node_modules
 /data
+*.bat
 
 # Windows image file caches
 Thumbs.db

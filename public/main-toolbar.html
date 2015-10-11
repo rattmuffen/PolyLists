@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <link rel="import" href="bower_components/paper-button/paper-button.html">
+<link rel="import" href="bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="bower_components/paper-item/paper-item.html">
+<link rel="import" href="bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="bower_components/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="bower_components/paper-input/paper-input.html">
 
@@ -14,11 +17,26 @@
 		
 			margin-bottom: 20px;
 		}
+		
+		paper-dropdown-menu {
+			--paper-input-container-color: white;
+			--paper-input-container-focus-color: white;
+			--paper-input-container-input-color: white;
+		}
 	</style>
 
     <template>
 		<paper-toolbar>
 			<div class="title">PolyLists</div>
+				
+			<paper-dropdown-menu label="Sort lists" no-label-float on-core-select="{{ test }}">
+				<paper-menu class="dropdown-content" on-iron-select="sort">
+					<paper-item>Title</paper-item>
+					<paper-item>Created</paper-item>
+					<paper-item>Updated</paper-item>
+				</paper-menu>
+			</paper-dropdown-menu>
+				
 			<paper-input id="search-input"
 						 on-input="search"
 						 bind-value="{{searchTerm}}"
@@ -45,6 +63,12 @@
 			search: function() {
 				// Fire search event.
 				this.fire('search', {searchTerm: this.searchTerm});
+			},
+			sort: function(e, item) {
+				var order = item.item.innerText.trim().toLowerCase();
+				
+				// Fire sort event.
+				this.fire('sort', {sortOrder: order});
 			}
 		});
 	</script>

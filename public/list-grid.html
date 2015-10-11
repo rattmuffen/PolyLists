@@ -19,7 +19,8 @@
 
 		<juicy-tile-list id="listgrid"
 						 defaultTileSetup="{'precalculateHeight': true, 'width': '400px'}">
-			<template is="dom-repeat" items="{{data}}" as="list" filter="{{filter(searchTerm)}}">
+			<template is="dom-repeat" items="{{data}}" as="list"
+					  filter="{{filter(searchTerm)}}" sort="{{sort(sortOrder)}}">
 				<grid-item class="list-grid-item"
 						   listid="{{list._id}}"
 						   title="{{list.title}}"
@@ -45,6 +46,10 @@
 				searchTerm: {
 					type: String,
 					value: ''
+				},
+				sortOrder: {
+					type: String,
+					value: 'updated'
 				}
 			},
 			response: function(request) {
@@ -74,15 +79,37 @@
 						(list.description && list.description.search(new RegExp(searchTerm, 'i')) != -1)
 				};
 			},
-			search: function (searchTerm) {
-				this.searchTerm = searchTerm;
+			sort: function(sortOrder) {
+				return function(list1, list2) {
+					var val1 = list1[sortOrder];
+					var val2 = list2[sortOrder];
+					var reverse = 1;
+					
+					// Create date objects if comparing dates.
+					if (sortOrder == 'created' || sortOrder == 'updated') {
+						val1 = new Date(val1);
+						val2 = new Date(val2);
+						
+						// Sort by updated should be reversed.
+						if (sortOrder == 'updated') reverse = -1;
+					}
+					
+					// Compare values.
+					if (val1 === val2) return 0;
+					return val1 < val2 ? reverse * -1 : reverse * 1;
+				};
 			}
 		});
 		
-		// Catch fire event from main-toobar.
+		// Catch search event from main-toobar.
 		document.querySelector('main-toolbar').addEventListener('search', function (e) {
-			document.querySelector('list-grid').search(e.detail.searchTerm);
-		})
+			document.querySelector('list-grid').searchTerm = e.detail.searchTerm;
+		});
+		
+		// Catch sort event from main-toobar.
+		document.querySelector('main-toolbar').addEventListener('sort', function (e) {
+			document.querySelector('list-grid').sortOrder = e.detail.sortOrder;
+		});
 		
 		var socket = io();
 		socket.on('update-data', function(data) {

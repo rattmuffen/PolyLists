@@ -4,22 +4,22 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-		"bower": "latest",
+        "bower": "latest",
         "express": "~4.0.0",
         "morgan": "~1.0.0",
         "body-parser": "~1.0.0",
         "method-override": "~1.0.0",
-		"request": "latest",
-		"node-uuid": "latest",
-		"socket.io": "latest",
-		"mongodb": "latest",
-		"monk": "latest"
+        "request": "latest",
+        "node-uuid": "latest",
+        "socket.io": "latest",
+        "mongodb": "latest",
+        "monk": "latest"
     },
     "scripts": {
         "start": "node app.js",
-		"postinstall": "bower install"
+        "postinstall": "bower install"
     },
     "engines": {
-        "node": "0.10.x"
+        "node": "10.x"
     }
 }

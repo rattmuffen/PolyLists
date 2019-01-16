@@ -10,10 +10,10 @@
         "body-parser": "~1.0.0",
         "method-override": "~1.0.0",
         "request": "latest",
-        "node-uuid": "latest",
-        "socket.io": "latest",
-        "mongodb": "latest",
-        "monk": "latest"
+        "node-uuid": "1.4.3",
+        "socket.io": "1.3.7",
+        "mongodb": "3.0.11",
+        "monk": "6.0.6"
     },
     "scripts": {
         "start": "node app.js",

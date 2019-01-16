@@ -22,7 +22,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan('dev'));
 
-var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'localhost/PolyLists'; 
+var mongoUri = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'localhost/PolyLists';
 var db = monk(mongoUri);
 var listDB = db.get('lists');
 
@@ -34,7 +34,7 @@ io.on('connection', function (socket) {
 app.get('/get/lists', function (req, res) {
     listDB.find({}, {}, function(err, lists) {
 		// TODO Handle errors.
-		
+
 		// Send all lists.
 		res.send(JSON.stringify(lists));
     });
@@ -48,7 +48,7 @@ app.post('/create/list', function (req, res) {
 	var color = req.body.color;
 	var image = req.body.image != null ? req.body.image : '';
 	var checkable = req.body.checkable == 'true';
-	
+
 	console.log('Create list ' + title);
 
 	// Create new list.
@@ -63,15 +63,12 @@ app.post('/create/list', function (req, res) {
 		'updated': now,
 		'items': []
 	};
-	
-	// Add it to DB
-	listDB.insert(list, function (err, lists) {
-		// TODO Handle errors.
 
-		// Send updated data and end.
+	// Add it to DB
+	listDB.insert(list).then((data) => {
 		sendDataUpdate('List \'' + title + '\' was created.');
 		res.end();
-    });
+	});
 });
 
 // Remove a list.
@@ -79,15 +76,15 @@ app.post('/remove/list', function (req, res) {
 	// Get data from request body.
 	var id = req.body.id;
 	var title = req.body.title;
-	
+
 	console.log('Remove list ' + id);
 
 	// Remove list from DB.
-	listDB.remove({'_id': id});
-	
-	// Send updated data and end.
-	sendDataUpdate('\'' + title + '\' was removed.');
-	res.end();
+	listDB.remove({'_id': id}).then((data) => {
+		// Send updated data and end.
+		sendDataUpdate('\'' + title + '\' was removed.');
+		res.end();
+	});
 });
 
 // Update a list.
@@ -100,13 +97,13 @@ app.post('/update/list', function (req, res) {
 	var image = req.body.image != null ? req.body.image : '';
 	var checkable = req.body.checkable == 'true';
 	var created = req.body.created;
-	
-	console.log('Update list ' + title);
+
+	console.log('Update list ID: ' + id);
 
 	// Get list and update fields.
-	listDB.findById(id, function(err, list) {
+	listDB.findOne({_id: id}).then((list) => {
 		// TODO Handle errors.
-		
+
 		// Set values.
 		list.title = title;
 		list.description = description;
@@ -117,11 +114,11 @@ app.post('/update/list', function (req, res) {
 		list.updated = new Date();
 
 		// Update in DB.
-		listDB.updateById(id, list);
-		
-		// Send updated data and end.
-		sendDataUpdate('List \'' + title + '\' was updated.');
-		res.end();
+		listDB.update({_id: id}, list).then((data) => {
+			// Send updated data and end.
+			sendDataUpdate('List \'' + title + '\' was updated.');
+			res.end();
+		});
 	});
 });
 
@@ -130,24 +127,37 @@ app.post('/add/item', function (req, res) {
 	// Get data from request body.
 	var id = req.body.id;
 	var text = req.body.text;
-	
+
 	console.log('Add ' + text + ' to list ' + id);
-	
+
 	// Get list and push item.
-	listDB.findById(id, function(err, list) {
+	listDB.findOne({_id: id}).then((list) => {
 		// TODO Handle errors.
-		
+
 		// Push item to list items.
 		var items = list.items ? list.items : [];
 		items.push({'id': uuid.v4(), 'text': text, 'checked': false});
-		list.items = items;
-		
+
+		console.log(items);
+
+		// Set values.
+		var updatedList = {
+			'title': list.title,
+			'description':  list.description,
+			'color': list.color,
+			'image': list.image,
+			'checkable': list.checkable,
+			'created': list.created,
+			'updated': new Date(),
+			'items': items
+		}
+
 		// Update in DB.
-		listDB.updateById(id, list);
-		
-		// Send updated data and end.
-		sendDataUpdate('\'' + text + '\' was added to \'' + list.title + '\'.');
-		res.end();
+		listDB.update({_id: id}, updatedList).then((data) => {
+			// Send updated data and end.
+			sendDataUpdate('\'' + text + '\' was added to \'' + list.title + '\'.');
+			res.end();
+		});
 	});
 });
 
@@ -157,22 +167,22 @@ app.post('/remove/item', function (req, res) {
 	var itemid = req.body.id;
 	var text = req.body.text;
 	var listid = req.body.listid;
-	
+
 	console.log('Remove item ' + itemid + ' from list ' + listid);
-	
+
 	// Get list and remove item.
-	listDB.findById(listid, function(err, list) {
+	listDB.findOne({_id: listid}).then((list) => {
 		// TODO Handle errors.
 
 		// Remove item from list items.
 		list.items.splice(getItemIndex(list.items, itemid), 1);
-		
+
 		// Update in DB.
-		listDB.updateById(listid, list);
-		
-		// Send updated data and end.
-		sendDataUpdate('\'' + text + '\' was added to \'' + list.title + '\'.');
-		res.end();
+		listDB.update({_id: listid}, list).then((data) => {
+			// Send updated data and end.
+			sendDataUpdate('\'' + text + '\' was remoced from \'' + list.title + '\'.');
+			res.end();
+		});
 	});
 });
 
@@ -181,33 +191,32 @@ app.post('/check/item', function (req, res) {
 	// Get data from request body.
 	var itemid = req.body.id;
 	var listid = req.body.listid;
-	
+
 	console.log('Toggle check for item ' + itemid + ' in list ' + listid);
-	
+
 	// Get list and toggle item check.
-	listDB.findById(listid, function(err, list) {
+	listDB.findOne({_id: listid}).then((list) => {
 		// TODO Handle errors.
-		
+
 		// Toggle checked.
 		var item = list.items[getItemIndex(list.items, itemid)];
 		item.checked = !item.checked;
-		
+
 		// Update in DB.
-		listDB.updateById(listid, list);
-		
-		// Send updated data and end.
-		sendDataUpdate('\'' + item.text + '\' was toggled in \'' + list.title + '\'');
-		res.end();
+		listDB.update({_id: listid}, list).then((data) => {
+			// Send updated data and end.
+			sendDataUpdate('\'' + item.text + '\' was toggled in \'' + list.title + '\'');
+			res.end();
+		});
 	});
 });
 
 // Emits update event with list data to all connected clients.
 function sendDataUpdate(event) {
-    listDB.find({},{}, function(err, lists) {
-		// TODO Handle errors.
-		
-		var data = {'lists': lists, 'event': event};
-		io.emit('update-data', JSON.stringify(data));
+    listDB.find({}, {}, function(err, lists) {
+			// TODO Handle errors.
+			var data = {'lists': lists, 'event': event};
+			io.emit('update-data', JSON.stringify(data));
     });
 }
 
@@ -215,7 +224,7 @@ function sendDataUpdate(event) {
 function getItemIndex(items, id) {
 	for (var i = 0; i <= items.length; i++) {
 		var item = items[i];
-		
+
 		if (item && item.id == id) {
 			return i;
 		}
